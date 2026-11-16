@@ -30,12 +30,13 @@
 
     <section class="results" aria-label="Recipe results" aria-busy="false">
       <div class="results-heading"><p class="eyebrow">ON THE MENU</p><p id="status" role="status" aria-live="polite">Finding a little dinner inspiration…</p></div>
+      <ul id="recipe-options" aria-label="Matching recipes" hidden></ul>
       <article id="recipe" hidden>
         <div class="recipe-overview">
           <div class="photo-wrap"><img id="meal-image" alt="" width="700" height="700"><span class="photo-label">TONIGHT'S INSPIRATION</span></div>
           <div class="recipe-summary">
             <p class="eyebrow" id="meal-category"></p>
-            <h2 id="meal-name"></h2>
+            <h2 id="meal-name" tabindex="-1"></h2>
             <p class="meal-origin" id="meal-area"></p>
             <div class="recipe-divider"></div>
             <p class="summary-note">A new idea for your dinner table.<br>Read the recipe, gather your ingredients, and make it your own.</p>

@@ -13,8 +13,10 @@ const searchInput = document.querySelector("#search-input");
 const surpriseButton = document.querySelector("#surprise-button");
 const statusMessage = document.querySelector("#status");
 const recipe = document.querySelector("#recipe");
+const recipeOptions = document.querySelector("#recipe-options");
 const results = document.querySelector(".results");
-// querySelectorAll() finds all matching elements, rather than just one.
+// These are the two buttons in the original HTML. Recipe-choice buttons are
+// created later and removed whenever a new request starts.
 const buttons = document.querySelectorAll("button");
 
 // 2. RESPOND TO A SEARCH
@@ -39,17 +41,21 @@ searchForm.addEventListener("submit", function (event) {
 // Both buttons use loadRecipe(). Only the endpoint (the URL's ending) changes.
 // random.php asks the API to choose a single random meal.
 surpriseButton.addEventListener("click", function () {
-  loadRecipe("random.php");
+  loadRecipe("random.php", false);
 });
 
 // 3. REQUEST DATA ASYNCHRONOUSLY
 // async allows us to use await inside this function.
 // await pauses this function while a Promise is pending, not the whole browser.
 // The page can still respond to other activity while the network request runs.
-async function loadRecipe(endpoint) {
+// showChoices defaults to true for searches. Pass false to open a meal directly.
+async function loadRecipe(endpoint, showChoices = true) {
   // Show that work is in progress and hide the previous recipe.
   statusMessage.textContent = "Finding a little dinner inspiration…";
   recipe.hidden = true;
+  // Clear the previous choices so they cannot select stale results while loading.
+  recipeOptions.replaceChildren();
+  recipeOptions.hidden = true;
   // aria-busy communicates the loading state to assistive technology.
   results.setAttribute("aria-busy", "true");
   // Disable both buttons to prevent overlapping requests.
@@ -78,14 +84,16 @@ async function loadRecipe(endpoint) {
       return;
     }
 
-    // JavaScript arrays start at index 0, so [0] selects the first recipe.
-    // Pass that recipe object to the function that updates the HTML.
-    showRecipe(data.meals[0]);
-    // This conditional (ternary) operator is a short if/else expression:
-    // condition ? valueIfTrue : valueIfFalse.
-    statusMessage.textContent = data.meals.length > 1
-      ? "Showing the first of " + data.meals.length + " matching recipes."
-      : "A little inspiration, served fresh.";
+    if (showChoices) {
+      // Searches show every match, even when there is only one result.
+      showRecipeOptions(data.meals);
+      const label = data.meals.length === 1 ? " recipe found." : " recipes found.";
+      statusMessage.textContent = data.meals.length + label + " Choose one below.";
+    } else {
+      // Random requests return one meal. [0] reads the first item in the array.
+      showRecipe(data.meals[0]);
+      statusMessage.textContent = "A little inspiration, served fresh.";
+    }
   } catch (error) {
     // Show a helpful message on the page and technical details in the console.
     statusMessage.textContent = "We couldn't load a recipe. Check your connection and try again.";
@@ -98,7 +106,37 @@ async function loadRecipe(endpoint) {
   }
 }
 
-// 4. UPDATE THE PAGE WITH THE API DATA
+// 4. BUILD A LIST OF RECIPE CHOICES
+function showRecipeOptions(meals) {
+  // forEach() runs this function once for each recipe returned by the API.
+  meals.forEach(function (meal) {
+    // Create a list item containing a real button, usable by mouse or keyboard.
+    const item = document.createElement("li");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = meal.strMeal;
+    button.setAttribute("aria-pressed", "false");
+
+    button.addEventListener("click", function () {
+      // The search already returned the full recipe, so no second fetch is needed.
+      showRecipe(meal);
+      // Mark the chosen button and clear the selection on the other buttons.
+      recipeOptions.querySelectorAll("button").forEach(function (choice) {
+        choice.setAttribute("aria-pressed", "false");
+      });
+      button.setAttribute("aria-pressed", "true");
+      statusMessage.textContent = "Showing " + meal.strMeal + ". Choose another recipe anytime.";
+      // Move focus to the new recipe so keyboard and screen-reader users can read it.
+      document.querySelector("#meal-name").focus();
+    });
+
+    item.append(button);
+    recipeOptions.append(item);
+  });
+  recipeOptions.hidden = false;
+}
+
+// 5. UPDATE THE PAGE WITH THE API DATA
 // "meal" is one recipe object. strMeal, strCategory, etc. are field names
 // defined by TheMealDB; we use those exact names to read its data.
 function showRecipe(meal) {
@@ -117,7 +155,7 @@ function showRecipe(meal) {
   recipe.hidden = false;
 }
 
-// 5. LOAD AN INITIAL RECIPE
+// 6. LOAD AN INITIAL RECIPE
 // This runs once when the script reaches this line, without a button click.
 // It uses the same request function as the search and Surprise Me buttons.
-loadRecipe("search.php?s=Arrabiata");
+loadRecipe("search.php?s=Arrabiata", false);
