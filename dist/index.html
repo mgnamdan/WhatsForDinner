@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Find a little inspiration for dinner. Search for a recipe or let chance choose tonight's meal.">
+  <title>What's for Dinner?</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./"><span aria-hidden="true">✳</span> The Dinner Edit</a>
+    <span class="header-note">A little inspiration. A good meal.</span>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">THE EVERYDAY QUESTION</p>
+      <h1 id="page-title">What's for <em>dinner?</em></h1>
+      <p class="intro-copy">Something familiar. Something unexpected.<br>Find your next good meal, one recipe at a time.</p>
+      <form id="search-form">
+        <label for="search-input">What are you in the mood for?</label>
+        <div class="search-row">
+          <input id="search-input" type="search" placeholder="Try pasta, curry, or chicken…" required maxlength="100">
+          <button type="submit">Find a recipe <span aria-hidden="true">↗</span></button>
+        </div>
+      </form>
+      <div class="surprise-row"><span>Can't decide?</span> <button id="surprise-button" type="button">Surprise me <span aria-hidden="true">↝</span></button></div>
+    </section>
+
+    <section class="results" aria-label="Recipe results" aria-busy="false">
+      <div class="results-heading"><p class="eyebrow">ON THE MENU</p><p id="status" role="status" aria-live="polite">Finding a little dinner inspiration…</p></div>
+      <article id="recipe" hidden>
+        <div class="recipe-overview">
+          <div class="photo-wrap"><img id="meal-image" alt="" width="700" height="700"><span class="photo-label">TONIGHT'S INSPIRATION</span></div>
+          <div class="recipe-summary">
+            <p class="eyebrow" id="meal-category"></p>
+            <h2 id="meal-name"></h2>
+            <p class="meal-origin" id="meal-area"></p>
+            <div class="recipe-divider"></div>
+            <p class="summary-note">A new idea for your dinner table.<br>Read the recipe, gather your ingredients, and make it your own.</p>
+            <a class="recipe-jump" href="#instructions">Let's get cooking <span aria-hidden="true">↓</span></a>
+          </div>
+        </div>
+        <div class="instructions" id="instructions">
+          <p class="eyebrow">FROM IDEA TO TABLE</p>
+          <h3>In the kitchen</h3>
+          <p id="meal-instructions"></p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer><span>Good food starts with a little curiosity.</span><span>Recipes & photography from <a href="https://www.themealdb.com/" target="_blank" rel="noopener noreferrer">TheMealDB ↗</a></span></footer>
+</body>
+</html>
